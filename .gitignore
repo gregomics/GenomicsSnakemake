@@ -10,7 +10,7 @@
 *.rar
 *.tar
 *.zip
-
+*.nfs*
 # Logs and databases #
 ######################
 *.log
