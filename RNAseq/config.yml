@@ -1,0 +1,21 @@
+---
+  indir: "data/"
+
+  samples: "MOO WT"
+
+  outdir: "results/"
+
+  samtools:
+    threads: "2"
+
+  hisat2:
+    genome: "/resource/bundles/Indexes/Homo_sapiens/Ensembl/GRCh37/Sequence/HISAT2Index/genome"
+    threads: "4"
+
+  readcount:
+    gtf: "/resource/bundles/Indexes/Homo_sapiens/Ensembl/GRCh37/Annotation/Genes/genes.gtf"
+    strand: "1"
+    feat: "exon"
+    summary: "gene_id"
+    threads: "4"
+    phred: 10
