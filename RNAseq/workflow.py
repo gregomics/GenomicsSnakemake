@@ -14,7 +14,8 @@ rule map_to_genome:
     threads: 4
     log:
         "logs/hisat2/{file}.log"
-    shell: "(hisat2 -x {params.genome} -U {input}  -p {threads} > {output}) 2>&1 > {log}"
+    shell: "module load HISAT2/2.0.4-foss-2016b;"
+      "(hisat2 -x {params.genome} -U {input}  -p {threads} > {output}) 2>&1 > {log}"
 
 rule sam_to_bam:
     input: "{file}.sam"
@@ -22,7 +23,8 @@ rule sam_to_bam:
       temp("{file}.bam")
     params: threads = config["samtools"]["threads"]
     log: "logs/samtools/{file}.log"
-    shell: "(samtools view -bS -@ {params.threads} {input} > {output}) > {log}"
+    shell: "module load SAMtools/1.6-foss-2016b;"
+      "(samtools view -bS -@ {params.threads} {input} > {output}) > {log}"
 
 
 rule sort_bam:
@@ -32,7 +34,8 @@ rule sort_bam:
     params: threads = config["samtools"]["threads"]
     log: "logs/samtools/{file}_sorting.log"
     message: "Executing sorting BAM  with {threads} threads on the following files {input}."
-    shell: "(samtools view -bS -@ {params.threads} {input} > {output}) > {log}"
+    shell: "module load SAMtools/1.6-foss-2016b;"
+      "(samtools sort -@ {params.threads} -o {output} {input}) > {log}"
 
 rule count_read_on_feature:
     input: "{file}_sorted.bam"
