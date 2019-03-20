@@ -1,0 +1,36 @@
+"""getting stringTie file from BAM file
+
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+if not "gtf" in config["stringtie"].keys():
+    sys.exit('The key ["stringtie"]["gtf"] must be defined in the YAML file')
+
+if not "strand" in config["stringtie"].keys():
+    sys.exit('The key ["stringtie"]["strand"] must be defined in the YAML file')
+
+if not "threads" in config["stringtie"].keys():
+    config["stringtie"]["threads"] = 1
+
+if not "other_options" in config["stringtie"].keys():
+    config["stringtie"]["other_options"] = ""
+
+rule stringtie_on_bam:
+  input: config["dir"]["results"] + "{file}" + "_sorted.bam"
+  output: config["dir"]["results"] + "{file}" + ".gtf"
+  params: gtf      = config["stringtie"]["gtf"] , \
+          strand   = config["stringtie"]["strand"] , \
+          threads  = config["stringtie"]["threads"] , \
+          otherOpts = config["stringtie"]["other_options"]
+  log: "logs/stringtie/{file}.log"
+  message: "Running stringtie using {params.threads} threads on  {input}."
+  shell: "module load StringTie/1.3.3b-foss-2016b;"
+        "(stringtie -G {params.gtf} -o {output} {params.strand} -p {params.threads} {params.otherOpts} -l {file} {input}) 2>&1 > {log}"

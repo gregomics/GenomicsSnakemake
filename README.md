@@ -26,7 +26,16 @@ snakemake -s workflow.py
 
 ```
 
+## Running under SLURM
 
+Snakemake workflow can be run on the HPC using SLURM (or other scheduler).
+For SLURM here is the command that can be used:
+
+```{shell}
+snakemake -j 999 --cluster-config cluster.json --latency-wait 60 --cluster "sbatch -t 200 --error slurm.err " -s workflow.py
+
+```
+Note: The latency time needs to be increase for completion.
 
 # References
 

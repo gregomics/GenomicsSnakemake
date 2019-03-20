@@ -1,0 +1,29 @@
+"""Aligning reads on genome using hisat2
+
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+if not "genome" in config["hisat2"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+if not "threads" in config["hisat2"].keys():
+    config["hisat2"]["threads"] = 4
+
+rule map_to_genome:
+    input:forward = config["dir"]["results"] + "{file}" + "_R1_adapt_qual_trimmed.fastq" 
+    output: config["dir"]["results"] + "{file}.sam"
+    params: genome = config["hisat2"]["genome"] , \
+            hisat2_threads = config["hisat2"]["threads"]
+    log:
+        "logs/hisat2/{file}.log"
+    shell: "module load HISAT2/2.0.4-foss-2016b;"
+      "(hisat2 -x {params.genome} -U {input.forward} -p {params.hisat2_threads} > {output}) 2>&1 > {log}"
+

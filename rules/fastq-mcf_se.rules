@@ -1,0 +1,33 @@
+"""Trim reads using fastq-mcf software
+
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+if not "adaptors_file" in config["fastq-mcf"].keys():
+    sys.exit('The key ["fastq-mcf"]["adaptors_file"] must be defined in the YAML file')
+
+if not "fwd_read" in config["suffix"].keys():
+    sys.exit('The key ["suffix"]["fwd_read"] must be defined in the YAML file')
+
+if not "threshold" in config["fastq-mcf"].keys():
+    config["fastq-mcf"]["threshold"] = "20"
+
+rule trim_paired_ends:
+  input: forward = config["dir"]["data"] + "{reads}" + config["suffix"]["fwd_read"] + ".fastq.gz"
+  output: forward = config["dir"]["results"] + "{reads}" + config["suffix"]["fwd_read"] + "_adapt_qual_trimmed.fastq"
+ 
+  params: threshold = config["fastq-mcf"]["threshold"] ,\
+     adaptor_file   =  config["fastq-mcf"]["adaptors_file"]
+  log: "logs/trimming/{reads}_fastq-mcf.log"
+  message: "Trimming SE data using fastq-mcf fwd: {input.forward}"
+  shell: "fastq-mcf {params.adaptor_file} {input.forward} -q {params.threshold} -o {output.forward}  2> {log}"
+
+

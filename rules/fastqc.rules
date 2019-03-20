@@ -1,0 +1,11 @@
+"""Run fastqc on fastq.gz file
+"""
+
+
+rule fastqc:
+    input: "{reads}.fastq.gz"
+    output: "{reads}_fastqc/{sample}_fastqc.html"
+    params:
+        outdir = "{reads}_fastqc/", \
+    log: "{reads}_fastqc/{sample}_fastqc.log"
+    shell:"fastqc --outdir {params.outdir} --format fastq {input} 2> {log} "

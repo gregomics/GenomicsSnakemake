@@ -1,0 +1,19 @@
+"""convert SRA to Paired ends fastq using fastq-dump
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+rule sra_to_fastq_pe:
+  input: config["dir"]["data"] + "{file}" + ".sra"
+  output: config["dir"]["results"] + "{file}" + ".fastq.gz"
+  params: threads = config["samtools"]["threads"]
+  log: "logs/samtools/{file}.log"
+  shell: "module load SAMtools/1.6-foss-2016b;"
+      "(samtools view -bS -@ {params.threads} {input} > {output}) > {log}"

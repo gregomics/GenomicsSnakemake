@@ -1,0 +1,21 @@
+"""converting SAM to BAM using samtools
+
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+rule sam_to_bam:
+  input: config["dir"]["results"] + "{file}" + ".sam"
+  output: config["dir"]["results"] + "{file}" + ".bam"
+  params: threads = config["samtools"]["threads"]
+  log: "logs/samtools/{file}.log"
+  message: "Converting SAM to BAM with samtools using {params.threads} threads on {input}"
+  shell: "module load SAMtools/1.6-foss-2016b;"
+      "(samtools view -bS -@ {params.threads} {input} > {output}) > {log}"

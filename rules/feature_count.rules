@@ -1,0 +1,47 @@
+"""getting read count file using feature count from BAM file
+
+"""
+
+if not "dir" in config.keys():
+    sys.exit('The key ["dir"] must be defined in the YAML file')
+
+if not "data" in config["dir"].keys():
+    sys.exit('The key ["dir"]["data"] must be defined in the YAML file')
+
+if not "results" in config["dir"].keys():
+    sys.exit('The key ["dir"]["results"] must be defined in the YAML file')
+
+if not "gtf" in config["readcount"].keys():
+    sys.exit('The key ["readcount"]["gtf"] must be defined in the YAML file')
+
+if not "strand" in config["readcount"].keys():
+    sys.exit('The key ["readcount"]["strand"] must be defined in the YAML file')
+
+if not "feature" in config["readcount"].keys():
+    sys.exit('The key ["readcount"]["feature"] must be defined in the YAML file')
+
+if not "summary" in config["readcount"].keys():
+    sys.exit('The key ["readcount"]["summary"] must be defined in the YAML file')
+
+if not "BAMphred" in config["readcount"].keys():
+    config["readcount"]["BAMphred"] = "10"
+
+if not "threads" in config["readcount"].keys():
+    config["readcount"]["threads"] = 1
+
+if not "other_options" in config["readcount"].keys():
+    config["readcount"]["other_options"] = ""
+
+rule count_read_on_feature:
+  input: config["dir"]["results"] + "{file}" + "_sorted.bam"
+  output: config["dir"]["results"] + "{file}" + "_read_count.tsv"
+  params: gtf      = config["readcount"]["gtf"] , \
+          strand   = config["readcount"]["strand"] , \
+          feature  = config["readcount"]["feature"] , \
+          summary  = config["readcount"]["summary"] , \
+          BAMphred = config["readcount"]["BAMphred"] , \
+          threads  = config["readcount"]["threads"] , \
+          otherOpts = config["readcount"]["other_options"]
+  log: "logs/featureCount/{file}.log"
+  message: "Getting read count with featureCounts using {params.threads} threads on  {input}."
+  shell: "(featureCounts -a {params.gtf} -o {output} -s {params.strand} -t {params.feature} -g {params.summary} -Q {params.BAMphred} -T {params.threads} {params.otherOpts} {input}) 2>&1 > {log}"
