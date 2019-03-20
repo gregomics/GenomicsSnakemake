@@ -35,6 +35,8 @@ For SLURM here is the command that can be used:
 snakemake -j 999 --cluster-config cluster.json --latency-wait 60 --cluster "sbatch -t 200 --error slurm.err " -s workflow.py
 
 ```
+The advantage of using a configuration file (e.g. cluster.json) is that each rule can have a different setting.
+All the parameter from the json file can be accessed using {cluster.paramater}.
 Note: The latency time needs to be increase for completion.
 
 # References
